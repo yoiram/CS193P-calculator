@@ -16,8 +16,6 @@ class ViewController: UIViewController {
     
     var decimal = false
     
-    var hello = "hello"
-    
     var ans = false
     
     var userIsCurrentlyTypingNumber = false

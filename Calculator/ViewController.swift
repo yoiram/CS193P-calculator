@@ -14,10 +14,6 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var laggingDisplay: UILabel!
     
-    var decimal = false
-    
-    var ans = false
-    
     var userIsCurrentlyTypingNumber = false
     
     var brain = CalculatorBrain()
@@ -26,23 +22,24 @@ class ViewController: UIViewController {
         let digit = sender.currentTitle!
         
         if userIsCurrentlyTypingNumber {
-            if (digit != "."){
-                display.text = display.text! + digit
+            if (digit == "." && display.text!.rangeOfString(".") != nil) { return }
+            else if (digit == "0" && display.text == "0") { return }
+            else if (digit != "." && display.text == "0") {
+                display.text = digit
             }
-            else if (decimal == false){
-                display.text = display.text! + "."
-                decimal = true
+            else {
+                display.text = display.text! + digit
             }
         }
         else {
             if (digit == "."){
                 display.text = "0."
-                decimal = true
             }
             else{
-               display.text = digit
+                display.text = digit
             }
             userIsCurrentlyTypingNumber = true
+            laggingDisplay.text = brain.description != "?" ? brain.description : ""
         }
     }
     
@@ -51,56 +48,53 @@ class ViewController: UIViewController {
             enter()
         }
         if let operation = sender.currentTitle {
-            laggingDisplay.text = laggingDisplay.text! + " " + sender.currentTitle!
-            ans = true
             if let result = brain.performOperation(operation) {
                 displayValue = result
             }
             else {
-                displayValue = 0
+                displayValue = nil
+                Clear()
             }
         }
     }
    
     @IBAction func enter() {
         userIsCurrentlyTypingNumber = false
-        decimal = false
-        if let result = brain.pushOperand(displayValue){
+        if let result = brain.pushOperand(displayValue!){
             displayValue = result
         }
         else {
-            displayValue = 0
+            displayValue = nil
+            Clear()
         }
     }
     
-    @IBAction func Clear(sender: UIButton) {
-        brain.clearOpStack()
+    @IBAction func Clear() {
+        brain = CalculatorBrain()
         userIsCurrentlyTypingNumber = false
-        ans = false
-        decimal = false
+        displayValue = nil
         display.text = "0"
-        laggingDisplay.text = " "
+        laggingDisplay.text = ""
     }
     
-    var displayValue : Double {
+    var displayValue : Double? {
         get {
-            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+            if let displayText = display.text{
+                if let displayNumber = NSNumberFormatter().numberFromString(displayText) {
+                    return displayNumber.doubleValue
+                }
+            }
+            return nil
         }
         set {
-            if (laggingDisplay.text! == " "){
-                laggingDisplay.text = "\(newValue)"
-            }
-            else{
-                laggingDisplay.text = laggingDisplay.text! + " " + "\(newValue)"
-            }
-            if (ans == true){
-                display.text = "\(newValue)"
-                ans = false
+            if (newValue != nil){
+                display.text = "\(newValue!)"
             }
             else{
                 display.text = "0"
             }
             userIsCurrentlyTypingNumber = false
+            laggingDisplay.text = brain.description + "="
         }
     }
 }

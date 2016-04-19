@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>527C753D-5872-4B83-934D-86FB951BBAAC</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>Calculator</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>1DE7D682C186873776741E3E4059301F833E5E02</key>
 		<string>https://github.com/yoiram/CS193b-calculator.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Calculator.xcodeproj/project.xcworkspace</string>
+	<string>Calculator.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>1DE7D682C186873776741E3E4059301F833E5E02</key>

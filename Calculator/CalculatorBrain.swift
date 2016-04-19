@@ -10,7 +10,7 @@ import Foundation
 
 class CalculatorBrain {
     
-    private enum Op: Printable { //": printable" is a protocol
+    private enum Op: CustomStringConvertible { //": printable" is a protocol
         case Operand(Double)
         case NullaryOperation(String, () -> Double)
         case UnaryOperation(String, Double -> Double)
@@ -52,10 +52,32 @@ class CalculatorBrain {
         knownOps["π"] = Op.NullaryOperation("π", {M_PI})
     }
     
+    typealias PropertyList = AnyObject
+    
+    var program: PropertyList {// guaranteed to return PropertyList
+        get{
+            return opStack.map { $0.description }
+        }
+        set{
+            if let opSymbols = newValue as? Array<String> {
+                var newOpStack = [Op]()
+                for opSymbol in opSymbols {
+                    if let op = knownOps[opSymbol] {
+                        newOpStack.append(op)
+                    }
+                    else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue {
+                        newOpStack.append(.Operand(operand))
+                    }
+                }
+                opStack = newOpStack
+            }
+        }
+    }
+    
     var description: String {
         get{
             var (result, ops) = ("",opStack)
-            do{
+            repeat {
                 var current: String?
                 (current, ops) = description(ops)
             result = result == "" ? current! : "\(current!), \(result)"
@@ -127,12 +149,13 @@ class CalculatorBrain {
     
     func evaluate() -> Double? {
         let (result, remainder) = evaluate(opStack)
-        println("\(opStack) = \(result) with \(remainder) left over")
+        print("\(opStack) = \(result) with \(remainder) left over")
         return result
     }
     
     func showOpStack() -> String? {
-        return " ".join(opStack.map{ "\($0)"})
+        return opStack.map{ "\($0)"}.joinWithSeparator(" ")
+        
     }
     
     func pushOperand(operand: Double) -> Double? {
